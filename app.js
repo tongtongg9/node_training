@@ -3,16 +3,30 @@ const chalk = require('chalk');
 const debug = require('debug')('app');
 const morgan = require('morgan');
 const path = require('path');
+const productRouter = express.Router();
+const products = require('./data/products.json');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3001;
 
 app.use(morgan('combined'));
 app.use(express.static(path.join(__dirname, '/public/')));
 
+app.set('views', './src/views');
+app.set('view engine', 'ejs');
+
 app.get('/', (req, res) => {
-    res.send('Hello to the world of Node.js');
+    res.render('index', {
+        username: 'tongtong',
+        myHobbies: ['eating', 'sleeping', 'coding']
+    });
 });
+
+productRouter.route('/').get((req, res) => {
+    res.render('products', products);
+});
+
+app.use('/products', productRouter)
 
 app.listen(port, () => {
     debug(`Example app listening at => ${chalk.green(`http://localhost:${port}`)}`);
